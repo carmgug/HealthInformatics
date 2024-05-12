@@ -19,9 +19,19 @@ Message structure:
         "phone": "1234567890",
         "language": "Italian"
     }
+    
     "operator":{
         "id": "123456"
     }
+    
+    "orders":[{
+        "placerOrderNumber": "123456",
+        "testName": "UREA AND ELECTROLYTES",
+        "potassiumValue": "4.5",
+        "potassiumUnit": "MMOLL",
+        "potassiumReferenceRange": "3.5-5.3",
+        }
+    ]
 }
 '''
 
@@ -104,8 +114,140 @@ def generate_pid_row(jsonObject):
     pid_row += "|"
     # 16. Column 18: Patient Account Number (empty)
     pid_row += "|"
+    pid_row += "\r"
     return pid_row
 
+def generate_obr_row_urine_test(jsonObject,curr_time):
+    # Create the OBR segment (The OBR segment contains the details of the order placed by the requesting system.)
+    obr_row = "OBR|1|"
+    # 1. Column 2: Placer Order Number (it receives its value from the JSON object)
+    obr_row += f"{jsonObject['orders'][0]['placerOrderNumber']}|"
+    # 2. Column 3: Filler Order Number made by (Fiscal ID of the patient + name of the test + timestamp) hashed
+    #curr_time = datetime.now()
+    fiscal_code = jsonObject['patient']['fiscalCode']
+    test_name = jsonObject['orders'][0]['testName']
+    filler_order_number = f"{fiscal_code}_{test_name}_{curr_time}".__hash__()
+    obr_row += f"{filler_order_number}|"
+    # 3. Column 4: Service Identifier
+    service_identifier = "us-0003" # identifier of Service Identifier for the urine test
+    obr_row += f"{service_identifier}^{jsonObject['orders'][0]['testName']}^^^|"
+    # 4. Column 5: Priority (empty)
+    obr_row += "|"
+    # 5. Column 6: Requested Date/Time
+    obr_row += f"{curr_time}|"
+    # 6. Column 7: Observation Date/Time
+    obr_row += f"{curr_time}|"
+    obr_row += "\r"
+    
+    return obr_row
+
+def generate_obx_row_urine_test(jsonObject,current_time):        
+    # Create the OBX segment (The OBX segment contains the observation details.)
+    # Three rows are needed for the urine test
+    # First row: Potassium
+    obx_row = "OBX|"
+    # 1. Column 1: Sequence Number
+    obx_row += "1|"
+    # 2. Column 2: type of observation
+    obx_row += "NM|"
+    # 3. Column 3: Potassium Observation Identifier
+    obx_row += "tt-0003-02^Potassium^^^|"
+    # 4. Column 4: Potassium Observation SubID (empty)
+    obx_row += "|"
+    # 5. Column 5: Potassium Observation Value (it receives its value from the JSON object)
+    obx_row += f"{jsonObject['orders'][0]['potassiumValue']}|"
+    # 6. Column 6: Potassium Observation Unit (it receives its value from the JSON object)
+    obx_row += f"{jsonObject['orders'][0]['potassiumUnit']}|"
+    # 7. Column 7: Reference Range (it receives its value from the JSON object)
+    obx_row += f"{jsonObject['orders'][0]['potassiumReferenceRange']}|"
+    # 8. Column 8: Abnormal Flags (empty)
+    obx_row += "|" #TO-DO: Add the abnormal flags
+    # 9. Column 9: Probability (empty)
+    obx_row += "|"
+    # 10. Column 10: Nature of Abnormal Test (empty)
+    obx_row += "|"
+    # 11. Column 11: Observation Result Status
+    obx_row += "F|" # F = Final results
+    # 12. Column 12: Effective Date of Reference Range (empty)
+    obx_row += "|"
+    # 13. Column 13: User Defined Access Checks (empty)
+    obx_row += "|"
+    # 14. Column 14: Date/Time of the Observation
+    obx_row += f"{current_time}|"
+    # 15. Column 15: Producer's ID (empty)
+    obx_row += "|"
+    obx_row += "\r"
+    
+    # Second row: Sodium  
+    obx_row += "OBX|"
+    # 1. Column 1: Sequence Number
+    obx_row += "2|"
+    # 2. Column 2: type of observation
+    obx_row += "NM|"
+    # 3. Column 3: Sodium Observation Identifier
+    obx_row += "tt-0003-03^Sodium^^^|"
+    # 4. Column 4: Sodium Observation SubID (empty)
+    obx_row += "|"
+    # 5. Column 5: Sodium Observation Value (it receives its value from the JSON object)
+    obx_row += f"{jsonObject['orders'][0]['sodiumValue']}|"
+    # 6. Column 6: Sodium Observation Unit (it receives its value from the JSON object)
+    obx_row += f"{jsonObject['orders'][0]['sodiumUnit']}|"
+    # 7. Column 7: Reference Range (it receives its value from the JSON object)
+    obx_row += f"{jsonObject['orders'][0]['sodiumReferenceRange']}|"
+    # 8. Column 8: Abnormal Flags (empty)
+    obx_row += "|" #TO-DO: Add the abnormal flags
+    # 9. Column 9: Probability (empty)
+    obx_row += "|"
+    # 10. Column 10: Nature of Abnormal Test (empty)
+    obx_row += "|"
+    # 11. Column 11: Observation Result Status
+    obx_row += "F|" # F = Final results
+    # 12. Column 12: Effective Date of Reference Range (empty)
+    obx_row += "|"
+    # 13. Column 13: User Defined Access Checks (empty)
+    obx_row += "|"
+    # 14. Column 14: Date/Time of the Observation
+    obx_row += f"{current_time}|"
+    # 15. Column 15: Producer's ID (empty)
+    obx_row += "|"
+    obx_row += "\r"
+    
+    # Third row: Urea
+    obx_row += "OBX|"
+    # 1. Column 1: Sequence Number
+    obx_row += "3|"
+    # 2. Column 2: type of observation
+    obx_row += "NM|"
+    # 3. Column 3: Urea Observation Identifier
+    obx_row += "tt-0003-04^Urea^^^|"
+    # 4. Column 4: Urea Observation SubID (empty)
+    obx_row += "|"
+    # 5. Column 5: Urea Observation Value (it receives its value from the JSON object)
+    obx_row += f"{jsonObject['orders'][0]['ureaValue']}|"
+    # 6. Column 6: Urea Observation Unit (it receives its value from the JSON object)
+    obx_row += f"{jsonObject['orders'][0]['ureaUnit']}|"
+    # 7. Column 7: Reference Range (it receives its value from the JSON object)
+    obx_row += f"{jsonObject['orders'][0]['ureaReferenceRange']}|"
+    # 8. Column 8: Abnormal Flags (empty)
+    obx_row += "|" #TO-DO: Add the abnormal flags
+    # 9. Column 9: Probability (empty)
+    obx_row += "|"
+    # 10. Column 10: Nature of Abnormal Test (empty)
+    obx_row += "|"
+    # 11. Column 11: Observation Result Status
+    obx_row += "F|" # F = Final results
+    # 12. Column 12: Effective Date of Reference Range (empty)
+    obx_row += "|"
+    # 13. Column 13: User Defined Access Checks (empty)
+    obx_row += "|"
+    # 14. Column 14: Date/Time of the Observation
+    obx_row += f"{current_time}|"
+    # 15. Column 15: Producer's ID (empty)
+    obx_row += "|"
+    obx_row += "\r"
+    
+    return obx_row    
+    
 
 def __main__():
     # Example of a JSON object
