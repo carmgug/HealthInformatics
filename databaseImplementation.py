@@ -1,3 +1,10 @@
+'''
+To run this code:
+    1-Install dockerDesktop installable at the link:https://docs.docker.com/engine/install/
+    2-Open Docker and execute in the cmd the command: docker run --rm -t -i -p 5984:5984 -e COUCHDB_USER=admin -e COUCHDB_PASSWORD=password couchdb:3.3.3
+    3-Execute the code
+'''
+
 import datetime
 import random
 import CouchDBClient
