@@ -10,7 +10,7 @@ def home():
 
 @app.route('/form_emergency_room')
 def emergency_room():
-    return render_template('emergency_room.html')
+    return render_template('FormPatient.html')
 @app.route('/cardiology_home')
 def cardiology_home():
     return render_template('TemplateProva.html')
@@ -29,12 +29,27 @@ def getExamByFiscalCode():
     #take the list of exams from the input
     exams, patientInfo = databaseImplementation.getExamByFiscalCode(fiscalCode)
     #return the list of exams
-    print(exams)
-    print("sono qui")
+
     data=exams
     patient=patientInfo
     return render_template('TemplateProva.html', data=data,patient=patient)
 
+
+@app.route('/getExamByFiscalCodeAndTestName', methods=['GET'])
+def getExamByFiscalCodeAndTestName():
+    fiscalCode = request.args.get('fiscalCode')
+    examsType = request.args.get('examsType')
+    if(examsType=="ALL"):
+        exams, patientInfo = databaseImplementation.getExamByFiscalCode(fiscalCode)
+        data=exams
+        patient=patientInfo
+        return render_template('TemplateProva.html', data=data,patient=patient)
+    #take the list of exams from the input
+    exams, patientInfo = databaseImplementation.getExamByFiscalCodeAndTestName(fiscalCode,examsType)
+    #return the list of exams
+    data=exams
+    patient=patientInfo
+    return render_template('TemplateProva.html', data=data,patient=patient)
 
 
 

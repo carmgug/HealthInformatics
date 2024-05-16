@@ -34,7 +34,7 @@ class CouchDBClient:
     # Constructor for the connection: An URL, an username, and a
     # password are expected.
     def __init__(self,
-                 url = 'http://192.168.129.41:5984',
+                 url = 'http://localhost:5984',
                  username = 'admin',
                  password = 'password'):
         # Make sure that the URL does not end with a slash

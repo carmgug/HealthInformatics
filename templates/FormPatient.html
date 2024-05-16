@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Example</title>
+    <style>
+        .form-container {
+            width: 80%;
+            margin: auto;
+        }
+        .form-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .form-row > div {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .form-row > div:last-child {
+            margin-right: 0;
+        }
+        .form-row input, .form-row select, .form-row textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
+</head>
+<body>
+
+<!-- Navbar -->
+{% include 'navbar.html' %}
+
+<div class="form-container">
+    <form>
+        <!-- Parte 1: Informazioni generali -->
+        <h1 class="is-size-4 has-text-centered"><strong>PATIENT INFORMATION</strong>  </h1>
+        <div class="form-row">
+            <div style="width: 100%;">
+                <label for="fiscal-code">Fiscal Code</label>
+                <input type="text" id="fiscal-code" name="fiscal-code" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div style="width: 70%;">
+                <label for="family-name">Family Name</label>
+                <input type="text" id="family-name" name="family-name" required>
+            </div>
+            <div style="width: 30%;">
+                <label for="sex">Sex</label>
+                <select id="sex" name="sex" required>
+                    <option value="">Select</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div style="width: 70%;">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div style="width: 30%;">
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div style="width: 100%;">
+                <label for="address">Address</label>
+                <input type="text" id="address" name="address" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div style="width: 50%;">
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" required>
+            </div>
+            <div style="width: 50%;">
+                <label for="country">Country</label>
+                <input type="text" id="country" name="country" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div style="width: 33%;">
+                <label for="prov">Prov</label>
+                <input type="text" id="prov" name="prov" required>
+            </div>
+            <div style="width: 34%;">
+                <label for="postal-code">Postal Code</label>
+                <input type="text" id="postal-code" name="postal-code" required>
+            </div>
+            <div style="width: 33%;">
+                <label for="country-code">Country Code</label>
+                <input type="text" id="country-code" name="country-code" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div style="width: 60%;">
+                <label for="telephone">Telephone</label>
+                <input type="tel" id="telephone" name="telephone" required>
+            </div>
+            <div style="width: 40%;">
+                <label for="language">Language</label>
+                <input type="text" id="language" name="language" required>
+            </div>
+        </div>
+
+        <!-- Parte 2: UREA AND ELECTROLYTES -->
+        <h1 class="is-size-4 has-text-centered "><strong>UREA AND ELECTROLYTES</strong></h1>
+        <div class="form-row">
+            <div style="width: 33%;">
+                <label for="potassiumValue">Potassium (MMOLL)</label>
+                <input type="text" id="potassiumValue" name="potassiumValue" required>
+            </div>
+            <div style="width: 33%;">
+                <label for="sodiumValue">Sodium (MMOLL)</label>
+                <input type="text" id="sodiumValue" name="sodiumValue" required>
+            </div>
+            <div style="width: 33%;">
+                <label for="ureaValue">Urea (MMOLL)</label>
+                <input type="text" id="ureaValue" name="ureaValue" required>
+            </div>
+        </div>
+
+        <!-- Parte 3: BLOOD PRESSURE -->
+        <h1 class="is-size-4 has-text-centered"><strong>BLOOD PRESSURE</strong></h1>
+        <div class="form-row">
+            <div style="width: 50%;">
+                <label for="systolicBloodPressureValue">Systolic Blood Pressure (MMHG)</label>
+                <input type="text" id="systolicBloodPressureValue" name="systolicBloodPressureValue" required>
+            </div>
+            <div style="width: 50%;">
+                <label for="diastolicBloodPressureValue">Diastolic Blood Pressure (MMHG)</label>
+                <input type="text" id="diastolicBloodPressureValue" name="diastolicBloodPressureValue" required>
+            </div>
+        </div>
+
+        <!-- Parte 4: Note -->
+        <h2 class="is-size-4 has-text-centered"><strong>NOTE</strong></h2>
+        <div class="form-row">
+            <div style="width: 100%;">
+                <label for="notes">Notes</label>
+                <textarea id="notes" name="notes" rows="4" required></textarea>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-row submit-button">
+                <button type="submit" class="button is-primary">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

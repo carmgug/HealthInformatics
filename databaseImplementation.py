@@ -85,6 +85,22 @@ nomi_vie = [
     "Trento", "Varese"
 ]
 
+urea_electrolytes_comments = [
+    "Patient's urea levels are within normal range, indicating proper kidney function.",
+    "Electrolyte levels are balanced, suggesting no underlying metabolic abnormalities.",
+    "Urea levels slightly elevated, may indicate dehydration. Advised increased fluid intake.",
+    "Potassium levels are low, suggesting possible renal issues. Recommend further investigation.",
+    "Calcium levels are within normal limits, indicating proper bone and nerve function.",
+]
+
+blood_pressure_comments = [
+    "Patient's blood pressure is elevated, indicating hypertension. Advised lifestyle modifications.",
+    "Blood pressure readings are consistently high. Medication adjustment may be necessary.",
+    "Systolic pressure is within normal range, but diastolic pressure is elevated. Monitor closely.",
+    "Blood pressure readings fluctuate, recommend daily monitoring to identify patterns.",
+    "Orthostatic hypotension observed, advise caution when changing positions to prevent falls.",
+]
+
 operators = [{'idOperator': 1, 'name': 'John', 'surname': 'Doe'},
              {'idOperator': 2, 'name': 'Jane', 'surname': 'Doe'},
              {'idOperator': 3, 'name': 'Alice', 'surname': 'Smith'},
@@ -166,6 +182,8 @@ def generaData(numPerson):
                 "phone": phone,
                 "language": "Italian"
             },
+            "note": "NOTE PAZIENTE",
+
             "operator": {
                 "idOperator": random.choice(range(1, len(operators) + 1)),
                 "timestamp": datetime.now().strftime(formato_personalizzato_data)
@@ -177,6 +195,12 @@ def generaData(numPerson):
                     "potassiumValue": random.randint(35, 53) / 10,
                     "potassiumUnit": "MMOLL",
                     "potassiumReferenceRange": "3.5-5.3",
+                    "sodiumValue": random.randint(133, 146),
+                    "sodiumUnit": "MMOLL",
+                    "sodiumReferenceRange": "133-146",
+                    "ureaValue": round(random.uniform(2.5, 7.8),1),
+                    "ureaUnit": "MMOLL",
+                    "ureaReferenceRange": "2.5-7.8",
                 },
                 {
                     "placerOrderNumber": numOrder + 1,
@@ -256,8 +280,14 @@ def addExam(dbClient, fiscalCode, operatorId, examInfo, time):
             'idOperator': operatorId,  # Aggiungi l'identificatore dell'operatore che ha effettuato l'ordine
             'testName': examInfo['testName'],
             'potassiumValue': examInfo['potassiumValue'],
-            'potassiumUnit': examInfo['potassiumUnit'],
-            "potassiumReferenceRange": examInfo['potassiumReferenceRange'],
+            'potassiumUnit': "MMOLL",
+            "potassiumReferenceRange": "3.5-5.3",
+            "sodiumValue" : examInfo['sodiumValue'],
+            "sodiumUnit": "MMOLL",
+            "sodiumReferenceRange":"133-146",
+            "ureaValue":examInfo['ureaValue'] ,
+            "ureaUnit": "MMOLL",
+            "ureaReferenceRange": "2.5-7.8" ,
             'date': time[:8],  # Ottieni i primi 8 caratteri per la data
             'time': time[8:]  # Ottieni i caratteri dopo i primi 8 per l'ora
         })
@@ -270,11 +300,11 @@ def addExam(dbClient, fiscalCode, operatorId, examInfo, time):
             'idOperator': operatorId,  # Aggiungi l'identificatore dell'operatore che ha effettuato l'ordine
             'testName': examInfo['testName'],
             'systolicBloodPressureValue': examInfo['systolicBloodPressureValue'],
-            'systolicBloodPressureUnit': examInfo['systolicBloodPressureUnit'],
-            "systolicBloodPressureReferenceRange": examInfo['systolicBloodPressureReferenceRange'],
+            'systolicBloodPressureUnit': "MMHG",
+            "systolicBloodPressureReferenceRange": "90-120",
             'diastolicBloodPressureValue': examInfo['diastolicBloodPressureValue'],
-            'diastolicBloodPressureUnit': examInfo['diastolicBloodPressureUnit'],
-            "diastolicBloodPressureReferenceRange": examInfo['diastolicBloodPressureReferenceRange'],
+            'diastolicBloodPressureUnit': "MMHG",
+            "diastolicBloodPressureReferenceRange": "60-80",
             'date': time[:8],  # Ottieni i primi 8 caratteri per la data
             'time': time[8:]  # Ottieni i caratteri dopo i primi 8 per l'ora
         })
@@ -339,19 +369,24 @@ def getExamByFiscalCode(fiscalCode):
             if (el['patientId'] == doc['fiscalCode'] and not (doc in patientData)):
                 patientData.append(doc)
 
-    print(ret,patientData)
-
     return ret, patientData
 
 
 def getExamByFiscalCodeAndDate(fiscalCode, date):
     ret = []
+    patientData = []
     for exam in client.listDocuments('exam'):
         doc = client.getDocument('exam', exam)
         if (doc['patientId'] == fiscalCode and doc['date'] == date):
             ret.append(doc)
 
-    return ret
+    for el in ret:
+        for person in client.listDocuments('patient'):
+            doc = client.getDocument('patient', person)
+            if (el['patientId'] == doc['fiscalCode'] and not (doc in patientData)):
+                patientData.append(doc)
+
+    return ret, patientData
 
 
 def getExamByTestName(testName):
@@ -408,12 +443,19 @@ def getExamByDate(date):
 
 def getExamByFiscalCodeAndTestName(fiscalCode, testName):
     ret = []
+    patientData = []
     for exam in client.listDocuments('exam'):
         doc = client.getDocument('exam', exam)
         if (doc['patientId'] == fiscalCode and doc['testName'] == testName):
             ret.append(doc)
 
-    return ret
+    for el in ret:
+        for person in client.listDocuments('patient'):
+            doc = client.getDocument('patient', person)
+            if (el['patientId'] == doc['fiscalCode'] and not (doc in patientData)):
+                patientData.append(doc)
+
+    return ret, patientData
 
 
 addOperators(operators)
@@ -444,6 +486,7 @@ print(getExamByOperatorId(1))
 print("---------GET EXAM BY FISCAL CODE AND TEST NAME---------")
 
 print(getExamByFiscalCodeAndTestName("MRCDNLS1991VEROF", "UREA AND ELECTROLYTES"))
+
 
 print("---------GET ALL FISCAL CODE---------")
 

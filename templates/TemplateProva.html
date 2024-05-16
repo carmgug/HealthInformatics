@@ -20,14 +20,14 @@
     <div class="box" >
         <div class="container is-widescreen">
             <div class="notification is-primary is-light" style="box-shadow: 10px 10px lightblue">
-                <form method="GET" action="{{ url_for('getExamByFiscalCode') }}" class="field has-addons">
+                <form method="GET" action="{{ url_for('getExamByFiscalCodeAndTestName') }}" class="field has-addons">
                     <input required class="input is-primary" type="text" name="fiscalCode" placeholder="Insert Fiscal Code" />
                     <p class="control">
                         <span class="select is-primary">
-                            <select name="examsType">
+                            <select name="examsType" >
+                                <option value="ALL">All Type of Exams</option>
                                 <option value="UREA AND ELECTROLYTES">Urea Test Exams</option>
                                 <option value="BLOOD PRESSURE">Blood Pressure Exams</option>
-                                <option value="ALL">All Type of Exams</option>
                             </select>
                         </span>
                     </p>
@@ -47,31 +47,74 @@
                 <div class="box" >
                     <article class="media">
                         <div class="media-content">
-                            <div class="content">
-                                <!-- Aggiunta della data centrata -->
-                                <p>
-                                    <strong>Patient ID: {{item.patientId}}</strong>
-                                    {% for pat in patient %}
-                                    {% if pat.fiscalCode == item.patientId %}
-                                    <strong>Name:</strong> {{pat.name}}
-                                    <strong>Cognome:</strong> {{pat.familyName}}
-                                    <strong>Sex:</strong> {{pat.sex}}
-                                    <strong>Birth Date:</strong> {{pat.birthDate}}
+                            <div class="columns">
+                                <div class="column is-one-fifth" style="border-right: 1px solid #ddd; padding-right: 10px; text-align: center;">
+                                    <div class="content">
+                                        <!-- Titolo -->
+                                        <h1 class="is-size-5 has-text-centered">{{ item.testName }}</h1>
+                                        <!-- Corpo -->
+                                        <div>
+                                            <!-- Immagine e informazioni -->
+                                            <img src="/static/Cartella.jpg" alt="Cartella" style="width: 50%; height: auto; margin: 0 auto;">
+                                            <p>
+                                                <strong>Data:</strong> {{ item.date[6:8] }}/{{ item.date[4:6] }}/{{ item.date[:4] }}<br>
+                                                <strong>Operatore:</strong> {{ item.idOperator }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column" style="border-right: 1px solid #ddd; padding-right: 10px;">
+                                    <div class="content">
+                                        <!-- Titolo -->
+                                        <h1 class="is-size-5 has-text-centered">Misuration Results</h1>
+                                        <!-- Corpo -->
+                                        <div>
+                                            <!-- Informazioni sulla visita -->
+                                            <p>
+                                                {% if item.testName == 'BLOOD PRESSURE' %}
+                                                <strong>Systolic:</strong> {{ item.systolicBloodPressureValue }} {{ item.systolicBloodPressureUnit }} ({{item.systolicBloodPressureReferenceRange }})<br>
+                                                <strong>Diastolic:</strong> {{ item.diastolicBloodPressureValue }} {{ item.diastolicBloodPressureUnit}} ( {{item.diastolicBloodPressureReferenceRange}})
+                                                {% else %}
+                                                <strong>Potassium:</strong> {{ item.potassiumValue }} {{ item.potassiumUnit }} ({{ item.potassiumReferenceRange}})<br>
+                                                <strong>Urea:</strong> {{ item.ureaValue }} {{ item.ureaUnit }} ({{ item.ureaReferenceRange}})<br>
+                                                <strong>Sodium:</strong> {{ item.sodiumValue }} {{ item.sodiumUnit }} ({{ item.sodiumReferenceRange}})
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column" style="border-right: 1px solid #ddd; padding-right: 10px;">
+                                    <div class="content">
+                                        <!-- Titolo -->
+                                        <h1 class="is-size-5 has-text-centered">Patient Data</h1>
+                                        <!-- Corpo -->
+                                        <div>
+                                            <!-- Informazioni del paziente -->
+                                            <p>
+                                                <strong>Fiscal Code:</strong> {{item.patientId}}<br>
+                                                {% for pat in patient %}
+                                                {% if pat.fiscalCode == item.patientId %}
+                                                <strong>Name:</strong> {{pat.name}}<br>
+                                                <strong>Cognome:</strong> {{pat.familyName}}<br>
+                                                <strong>Sex:</strong> {{pat.sex}}<br>
+                                                <strong>Birth Date:</strong> {{pat.birthDate}}<br>
+                                                <strong>Country:</strong> {{pat.country}} ({{pat.countryCode}})
+                                                {% endif %}
+                                                {% endfor %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column is-one-quarter" style="text-align: center;">
+                                    <div class="content">
+                                        <!-- Titolo -->
+                                        <h1 class="is-size-5 has-text-centered">Note</h1>
+                                        <!-- Corpo -->
+                                        <div>
 
-                                    {% endif %}
-                                    {% endfor %}
-                                    <br>
-                                    {% if item.testName == 'BLOOD PRESSURE' %}
-                                    <strong>Systolic:</strong> {{ item.systolicBloodPressureValue }} {{ item.systolicBloodPressureUnit }}
-                                    <strong>Diastolic:</strong> {{ item.diastolicBloodPressureValue }} {{ item.diastolicBloodPressureUnit }}
-                                    {% else %}
-                                    <strong>Potassium:</strong> {{ item.potassiumValue }} {{ item.potassiumUnit }} {{ item.potassiumReferenceRange}}
-                                    <strong>Urea:</strong> {{ item.ureaValue }} {{ item.ureaUnit }}
-                                    <strong>Sodium:</strong> {{ item.sodiumValue }} {{ item.sodiumUnit }}
-                                    {% endif %}
-                                    <br>
-                                    <strong>Date: {{ item.date[6:8] }}/{{ item.date[4:6] }}/{{ item.date[:4] }}</strong>
-                                </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </article>
@@ -98,6 +141,7 @@
 <script>
     document.querySelector('form').addEventListener('submit', function(event) {
 
+        // Impedisci il comportamento predefinito del modulo
         var fiscalCode = document.querySelector('[name="fiscalCode"]').value;
         var examsType = document.querySelector('[name="examsType"]').value;
 
