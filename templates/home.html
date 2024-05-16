@@ -1,0 +1,47 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Hello Bulma!</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
+    </head>
+    <style>
+        .hero {
+            background: url(/static/BACKGROUND2.jpeg) no-repeat  !important;
+            background-size: cover !important;
+        }
+    </style>
+</head>
+<body>
+<section class="hero is-primary is-bold is-fullheight">
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <h1 class="title" >
+                <p> Welcome to the Home Page of Our Health Informatics Project </p>
+            </h1>
+            <div class="center-buttons">
+                <a class="button is-primary" onclick="redirectToForum()" href="#">Emergency Room Form's</a>
+                <a class="button is-primary" onclick="redirectToService()" href="#" >Cardiology Page</a>
+            </div>
+        </div>
+    </div>
+
+<div  class="container has-text-centered">
+
+</div>
+
+<script>
+    function redirectToForum() {
+        window.location.href = "http://localhost:5000/form_emergency_room";
+    }
+
+    function redirectToService() {
+        window.location.href = "http://localhost:5000/cardiology_home";
+    }
+</script>
+</body>
+</html>

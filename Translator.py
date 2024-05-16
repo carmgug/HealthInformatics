@@ -432,5 +432,8 @@ def __main__():
     print(message[5])
     print(message[6])
     print(message[7])
+    print(message[8])
+    print(message[9])
+    print(message[10])
 
 __main__()

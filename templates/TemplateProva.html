@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ricerca Codice Fiscale</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
+</head>
+<body>
+
+<!-- Navbar -->
+{% include 'navbar.html' %}
+
+
+
+
+<div class=".container ">
+    <div class="notification is-info">
+    <!--Search Bar-->
+    <div class="box" >
+        <div class="container is-widescreen">
+            <div class="notification is-primary is-light" style="box-shadow: 10px 10px lightblue">
+                <form method="GET" action="{{ url_for('getExamByFiscalCode') }}" class="field has-addons">
+                    <input required class="input is-primary" type="text" name="fiscalCode" placeholder="Insert Fiscal Code" />
+                    <p class="control">
+                        <span class="select is-primary">
+                            <select name="examsType">
+                                <option value="UREA AND ELECTROLYTES">Urea Test Exams</option>
+                                <option value="BLOOD PRESSURE">Blood Pressure Exams</option>
+                                <option value="ALL">All Type of Exams</option>
+                            </select>
+                        </span>
+                    </p>
+                    <p class="control">
+                    </p>
+                    <div class="control">
+                        <button type="submit" class="button is-primary">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <br>
+        {% if data is defined %}
+        <div class="container is-widescreen  ">
+            <div class="notification is-primary is-light" style="box-shadow: 10px 10px lightblue">
+                {% for item in data %}
+                <div class="box" >
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <!-- Aggiunta della data centrata -->
+                                <p>
+                                    <strong>Patient ID: {{item.patientId}}</strong>
+                                    {% for pat in patient %}
+                                    {% if pat.fiscalCode == item.patientId %}
+                                    <strong>Name:</strong> {{pat.name}}
+                                    <strong>Cognome:</strong> {{pat.familyName}}
+                                    <strong>Sex:</strong> {{pat.sex}}
+                                    <strong>Birth Date:</strong> {{pat.birthDate}}
+
+                                    {% endif %}
+                                    {% endfor %}
+                                    <br>
+                                    {% if item.testName == 'BLOOD PRESSURE' %}
+                                    <strong>Systolic:</strong> {{ item.systolicBloodPressureValue }} {{ item.systolicBloodPressureUnit }}
+                                    <strong>Diastolic:</strong> {{ item.diastolicBloodPressureValue }} {{ item.diastolicBloodPressureUnit }}
+                                    {% else %}
+                                    <strong>Potassium:</strong> {{ item.potassiumValue }} {{ item.potassiumUnit }} {{ item.potassiumReferenceRange}}
+                                    <strong>Urea:</strong> {{ item.ureaValue }} {{ item.ureaUnit }}
+                                    <strong>Sodium:</strong> {{ item.sodiumValue }} {{ item.sodiumUnit }}
+                                    {% endif %}
+                                    <br>
+                                    <strong>Date: {{ item.date[6:8] }}/{{ item.date[4:6] }}/{{ item.date[:4] }}</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p>
+            <div class="container content has-text-centered">
+                <p> Carmelo Gugliotta, Marco Leto, Riccardo Barrichella, Francesca Mafalda Daniele</p>
+            </div>
+        </p>
+    </div>
+</footer>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+
+        var fiscalCode = document.querySelector('[name="fiscalCode"]').value;
+        var examsType = document.querySelector('[name="examsType"]').value;
+
+        var url = '{{ url_for("getExamByFiscalCode") }}' + '?fiscalCode=' + encodeURIComponent(fiscalCode) + '&examsType=' + encodeURIComponent(examsType);
+
+        // Effettua una richiesta GET al tuo Flask API
+        fetch(url)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                // Visualizza i risultati della ricerca nel div #results
+
+
+                if (data.length > 0) {
+                    // Codice per visualizzare i risultati dei test
+                } else {
+                    resultsDiv.textContent = 'Nessun risultato trovato.';
+                }
+            })
+            .catch(function(error) {
+                console.error('Si è verificato un errore:', error);
+            });
+    });
+</script>
+</body>
+</html>

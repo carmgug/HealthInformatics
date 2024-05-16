@@ -21,7 +21,7 @@ client.createDatabase('patient')
 client.createDatabase('operator')
 client.createDatabase('exam')
 
-print("Database List",client.listDatabases())
+print("Database List", client.listDatabases())
 
 #GENERATE DATA
 nomi_maschili = [
