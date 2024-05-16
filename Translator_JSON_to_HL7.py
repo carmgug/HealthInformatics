@@ -88,7 +88,7 @@ def translate_from_json_to_hl7(jsonObject):
     message_hl7+= generate_obr_row_blood_test(jsonObject,curr_time_tmp)
     message_hl7+= generate_obx_row_blood_test(jsonObject,curr_time_tmp)
     # Adding the NTE segment (The NTE segment contains narrative text information)
-    message_hl7 += "NTE|1||This is a test message for the Emergency Room Forum.|\r"
+    message_hl7 += f"NTE|1||{jsonObject['note']}|\r"
     return hl7.parse(message_hl7)
 
     # Set the message type
@@ -152,7 +152,7 @@ def generate_obr_row_urine_test(jsonObject,curr_time):
     # 3. Column 4: Service Identifier
     service_identifier = "25167001" # SNOMED universal Service Identifier for the urea and electrolytes test
     # The Service Identifier could be a local identifier but we chose to use the universal SNOMED ID
-    obr_row += f"{service_identifier}^{jsonObject['orders'][0]['testName']}^^^|"
+    obr_row += f"{service_identifier}^{jsonObject['orders'][0]['testName']}^SCT^^|"
     # 4. Column 5: Priority (empty)
     obr_row += "|"
     # 5. Column 6: Requested Date/Time
@@ -173,7 +173,7 @@ def generate_obx_row_urine_test(jsonObject,current_time):
     # 2. Column 2: type of observation
     obx_row += "NM|"
     # 3. Column 3: Potassium Observation Identifier
-    obx_row += "88480006^Potassium^^^|" # SNOMED universal code for Potassium
+    obx_row += "88480006^Potassium^SCT^^|" # SNOMED universal code for Potassium
     # 4. Column 4: Potassium Observation SubID (empty)
     obx_row += "|"
     # 5. Column 5: Potassium Observation Value (it receives its value from the JSON object)
@@ -207,7 +207,7 @@ def generate_obx_row_urine_test(jsonObject,current_time):
     # 2. Column 2: type of observation
     obx_row += "NM|"
     # 3. Column 3: Sodium Observation Identifier
-    obx_row += "39972003^Sodium^^^|" # SNOMED universal code for Sodium
+    obx_row += "39972003^Sodium^SCT^^|" # SNOMED universal code for Sodium
     # 4. Column 4: Sodium Observation SubID (empty)
     obx_row += "|"
     # 5. Column 5: Sodium Observation Value (it receives its value from the JSON object)
@@ -241,7 +241,7 @@ def generate_obx_row_urine_test(jsonObject,current_time):
     # 2. Column 2: type of observation
     obx_row += "NM|"
     # 3. Column 3: Urea Observation Identifier
-    obx_row += "387092000^Urea^^^|" # SNOMED universal code for Urea
+    obx_row += "387092000^Urea^SCT^^|" # SNOMED universal code for Urea
     # 4. Column 4: Urea Observation SubID (empty)
     obx_row += "|"
     # 5. Column 5: Urea Observation Value (it receives its value from the JSON object)
@@ -285,7 +285,7 @@ def generate_obr_row_blood_test(jsonObject,curr_time):
     service_identifier = "75367002" # SNOMED universal Service Identifier for the blood test
     # https://www.findacode.com/snomed/75367002--blood-pressure.html
     # The Service Identifier could be a local identifier but we chose to use the universal SNOMED ID
-    obr_row += f"{service_identifier}^{jsonObject['orders'][1]['testName']}^^^|"
+    obr_row += f"{service_identifier}^{jsonObject['orders'][1]['testName']}^SCT^^|"
     # 4. Column 5: Priority (empty)
     obr_row += "|"
     # 5. Column 6: Requested Date/Time
@@ -306,7 +306,7 @@ def generate_obx_row_blood_test(jsonObject,current_time):
     # 2. Column 2: type of observation
     obx_row += "NM|"
     # 3. Column 3: Systolic Blood Pressure Observation Identifier
-    obx_row += "271649006^Systolic Blood Pressure^^^|" # SNOMED universal code for Systolic Blood Pressure
+    obx_row += "271649006^Systolic Blood Pressure^SCT^^|" # SNOMED universal code for Systolic Blood Pressure
     #https://www.findacode.com/snomed/271649006--systolic-blood-pressure.html
     # 4. Column 4: Systolic Blood Pressure Observation SubID (empty)
     obx_row += "|"
@@ -341,7 +341,7 @@ def generate_obx_row_blood_test(jsonObject,current_time):
     # 2. Column 2: type of observation
     obx_row += "NM|"
     # 3. Column 3: Diastolic Blood Pressure Observation Identifier
-    obx_row += "271650006^Diastolic Blood Pressure^^^|" # SNOMED universal code for Diastolic Blood Pressure
+    obx_row += "271650006^Diastolic Blood Pressure^SCT^^|" # SNOMED universal code for Diastolic Blood Pressure
     #https://www.findacode.com/snomed/271650006--diastolic-blood-pressure.html
     # 4. Column 4: Diastolic Blood Pressure Observation SubID (empty)
     obx_row += "|"
@@ -421,16 +421,5 @@ def __main__():
     
     }
     # Translate the JSON object to an HL7 message
-    message = translate_from_json_to_hl7(jsonObject)
-    
-    print(message[0])
-    print(message[1])
-    print(message[2])
-    print(message[3])
-    print(message[4])
-    print(message[5])
-    print(message[6])
-    print(message[7])
-    print(message[8])
-    print(message[9])
-    print(message[10])
+    #DEBUG
+    #message = translate_from_json_to_hl7(jsonObject)

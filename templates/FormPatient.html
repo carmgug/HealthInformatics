@@ -33,7 +33,8 @@
 <!-- Navbar -->
 {% include 'navbar.html' %}
 
-<div class="form-container">
+<div class="container " >
+    <div class="notification is-primary is-light" >
     <form>
         <!-- Parte 1: Informazioni generali -->
         <h1 class="is-size-4 has-text-centered"><strong>PATIENT INFORMATION</strong>  </h1>
@@ -142,18 +143,121 @@
         <!-- Parte 4: Note -->
         <h2 class="is-size-4 has-text-centered"><strong>NOTE</strong></h2>
         <div class="form-row">
-            <div style="width: 100%;">
+            <div style="width: 80%;">
                 <label for="notes">Notes</label>
                 <textarea id="notes" name="notes" rows="4" required></textarea>
+            </div>
+            <div style="width: 20%;">
+                <label for="operatorId">OperatorID</label>
+                <input type="number" id="operatorId" name="operatorID" required></input>
             </div>
         </div>
         <div class="form-row">
             <div class="form-row submit-button">
-                <button type="submit" class="button is-primary">Submit</button>
+                <button type="button"  class="button is-primary" onclick="submitForm()" >Submit</button>
             </div>
         </div>
     </form>
+    </div>
 </div>
+
+<script>
+    function submitForm() {
+        // Impedisci il comportamento predefinito del modulo
+        var fiscalCode = document.querySelector('[name="fiscal-code"]').value;
+        var name = document.querySelector('[name="name"]').value;
+        var familyName = document.querySelector('[name="family-name"]').value;
+        var sex = document.getElementById('sex').value;
+        var birthDate = document.getElementById('date').value;
+        var address = document.getElementById('address').value;
+        var city = document.getElementById('city').value;
+        var country = document.getElementById('country').value;
+        var prov = document.getElementById('prov').value;
+        var postalCode = document.getElementById('postal-code').value;
+        var countryCode = document.getElementById('country-code').value;
+        var telephone = document.getElementById('telephone').value;
+        var language = document.getElementById('language').value;
+        var notes = document.getElementById('notes').value;
+
+        //Data about first exam
+        var potassiumValue = document.getElementById('potassiumValue').value;
+        var sodiumValue = document.getElementById('sodiumValue').value;
+        var ureaValue = document.getElementById('ureaValue').value;
+        //Data about second exam
+        var systolicBloodPressureValue = document.getElementById('systolicBloodPressureValue').value;
+        var diastolicBloodPressureValue = document.getElementById('diastolicBloodPressureValue').value;
+        //Operator ID
+        var operatorID = document.getElementById('operatorId').value;
+
+        //build a JSON object
+        var data = {
+            'patient': {
+                'fiscalCode': fiscalCode,
+                'name': name,
+                'familyName': familyName,
+                'sex': sex,
+                'birthDate': birthDate,
+                'streetAddress': address,
+                'city': city,
+                'country': country,
+                'province': prov,
+                'postalCode': postalCode,
+                'countryCode': countryCode,
+                'phone': telephone,
+                'language': language
+            },
+            'operator': {
+                'id': operatorID
+            },
+            'orders' : [
+                {
+                    'placerOrderNumber': 123,
+                    'testName': 'UREA AND ELECTROLYTES',
+                    'potassiumValue': potassiumValue,
+                    'potassiumUnit': 'MMOLL',
+                    'potassiumReferenceRange': "3.5-5.3",
+                    'sodiumValue': sodiumValue,
+                    'sodiumUnit': 'MMOLL',
+                    'sodiumReferenceRange': "133-146",
+                    'ureaValue': ureaValue,
+                    'ureaUnit': 'MMOLL',
+                    'ureaReferenceRange': "2.5-7.8"
+                },
+                {
+                    'placerOrderNumber': 124,
+                    'testName': 'BLOOD PRESSURE',
+                    'systolicBloodPressureValue': systolicBloodPressureValue,
+                    'systolicBloodPressureUnit': 'MMHG',
+                    'systolicBloodPressureReferenceRange': "90-120",
+                    'diastolicBloodPressureValue': diastolicBloodPressureValue,
+                    'diastolicBloodPressureUnit': 'MMHG',
+                    'diastolicBloodPressureReferenceRange': '60-80'
+                }
+            ],
+            'note': notes
+        }
+        var url = 'http://localhost:5000/send_to_cardiology';
+
+        // Effettua una richiesta POST al tuo Flask API
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                console.log('Success:', data);
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+            });
+    }
+</script>
+
 
 </body>
 </html>

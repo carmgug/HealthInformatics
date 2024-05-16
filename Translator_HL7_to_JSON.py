@@ -20,56 +20,61 @@ def translate_from_HL7_to_JSON(hl7_message):
     patientLanguage = hl7_message[2][15]
     
     patient = {
-        "patientID": patientID,
-        "patientName": patientName,
-        "patientSurname": patientSurname,
-        "patientGender": patientGender,
-        "patientBirthDate": patientBirthDate,
-        "patientAddress": patientAddress,
-        "patientCity": patientCity,
-        "patientProvince": patientProvince,
-        "patientPostalCode": patientPostalCode,
-        "patientCountryCode": patientCountryCode,
-        "patientPhoneNumber": patientPhoneNumber,
-        "patientLanguage": patientLanguage
+        "patientID": patientID[0],
+        "patientName": patientName[0],
+        "patientSurname": patientSurname[0],
+        "patientGender": patientGender[0],
+        "patientBirthDate": patientBirthDate[0],
+        "patientAddress": patientAddress[0],
+        "patientCity": patientCity[0],
+        "patientProvince": patientProvince[0],
+        "patientPostalCode": patientPostalCode[0],
+        "patientCountryCode": patientCountryCode[0],
+        "patientPhoneNumber": patientPhoneNumber[0],
+        "patientLanguage": patientLanguage[0]
     }
     
     operatorID = hl7_message[1][5]
-    timestamp = datetime.strptime(str(hl7_message[1][2]), "%Y%m%d%H%M%S")
+    #timestamp = datetime.strptime(str(hl7_message[1][2][0]), "%Y%m%d%H%M%S")
     operator = {
-        "operatorID": operatorID,
-        "timestamp": timestamp
+        "operatorID": operatorID[0],
+        "timestamp": str(hl7_message[1][2][0])
     }
     
     orders = [
         {
-            "placerOrderNumber": hl7_message[3][2],
-            "testName": hl7_message[3][4][0][1],
-            "potassiumValue": hl7_message[4][5],
-            "potassiumUnit": hl7_message[4][6],
-            "potassiumReferenceRange": hl7_message[4][7],
-            "sodiumValue": hl7_message[5][5],
-            "sodiumUnit": hl7_message[5][6],
-            "sodiumReferenceRange": hl7_message[5][7],
-            "ureaValue": hl7_message[6][5],
-            "ureaUnit": hl7_message[6][6],
-            "ureaReferenceRange": hl7_message[6][7] 
+            "placerOrderNumber": hl7_message[3][2][0],
+            "fillerOrderNumber": hl7_message[3][3][0],
+            "testName": hl7_message[3][4][0][1][0],
+            "potassiumValue": hl7_message[4][5][0],
+            "potassiumUnit": hl7_message[4][6][0],
+            "potassiumReferenceRange": hl7_message[4][7][0],
+            "sodiumValue": hl7_message[5][5][0],
+            "sodiumUnit": hl7_message[5][6][0],
+            "sodiumReferenceRange": hl7_message[5][7][0],
+            "ureaValue": hl7_message[6][5][0],
+            "ureaUnit": hl7_message[6][6][0],
+            "ureaReferenceRange": hl7_message[6][7][0]
         },
         {
-            "placerOrderNumber": hl7_message[7][2],
-            "testName": hl7_message[7][4][0][1],
-            "systolicBloodPressureValue": hl7_message[8][5],
-            "systolicBloodPressureUnit": hl7_message[8][6],
-            "systolicBloodPressureReferenceRange": hl7_message[8][7],
-            "diastolicBloodPressureValue": hl7_message[9][5],
-            "diastolicBloodPressureUnit": hl7_message[9][6],
-            "diastolicBloodPressureReferenceRange": hl7_message[9][7]
+            "placerOrderNumber": hl7_message[7][2][0],
+            "fillerOrderNumber": hl7_message[7][3][0],
+            "testName": hl7_message[7][4][0][1][0],
+            "systolicBloodPressureValue": hl7_message[8][5][0],
+            "systolicBloodPressureUnit": hl7_message[8][6][0],
+            "systolicBloodPressureReferenceRange": hl7_message[8][7][0],
+            "diastolicBloodPressureValue": hl7_message[9][5][0],
+            "diastolicBloodPressureUnit": hl7_message[9][6][0],
+            "diastolicBloodPressureReferenceRange": hl7_message[9][7][0]
         }
     ]
+
+    note = hl7_message[10][3]
     
-    json_object["patient"] = patient
-    json_object["operator"] = operator
-    json_object["orders"] = orders
+    json_object['patient'] = patient
+    json_object['operator'] = operator
+    json_object['orders'] = orders
+    json_object['note'] = note[0]
         
     return json_object
 
@@ -124,4 +129,3 @@ def __main__():
     hl7_message = Translator_JSON_to_HL7.translate_from_json_to_hl7(jsonObject)
     json_object = translate_from_HL7_to_JSON(hl7_message)
     print(json_object)
-__main__()
