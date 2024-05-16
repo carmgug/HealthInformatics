@@ -14,7 +14,6 @@ Message structure:
         "city": "Roma",
         "province": "RM",
         "postalCode": "00100",
-        "country": "Italia",
         "countryCode": "ITA",
         "phone": "1234567890",
         "language": "Italian"
@@ -31,13 +30,8 @@ Message structure:
         "testName": "UREA AND ELECTROLYTES",
         "potassiumValue": "4.5",
         "potassiumUnit": "MMOLL",
-        "potassiumReferenceRange": "3.5-5.3",   
-        "sodiumValue": hl7_message[5][5],
-        "sodiumUnit": hl7_message[5][6],
-        "sodiumReferenceRange": hl7_message[5][7],
-        "ureaValue": hl7_message[6][5],
-        "ureaUnit": hl7_message[6][6],
-        "ureaReferenceRange": hl7_message[6][7] 
+        "potassiumReferenceRange": "3.5-5.3",
+        ""
         },
         {
         "placerOrderNumber": "123457",
@@ -76,8 +70,9 @@ def generate_message_id(time):
 def translate_from_json_to_hl7(jsonObject):
     # Create a new HL7 message
     
-    curr_time_tmp = datetime.now()
-    curr_time_str= datetime.now().strftime("%Y%m%d%H%M%S")
+    curr_time = datetime.now()    
+    curr_time_str= curr_time.strftime("%Y%m%d%H%M%S")
+    curr_time_tmp =int(curr_time.timestamp())
     # Create the MSH segment
     message_hl7 = f"MSH|^~\&|{SENDING_APPLICATION}|{SENDING_FACILITY}|{RECEIVING_APPLICATION}|{RECEIVING_FACILITY}|{curr_time_str}||{TRIGGER_EVENT}|{generate_message_id(curr_time_str)}|P|2.5|||{ACCEPT_ACK_TYPE}\r"
     # Create the EVN segment (The EVN segment is used to communicate necessary trigger event information to receiving
@@ -93,9 +88,7 @@ def translate_from_json_to_hl7(jsonObject):
     message_hl7+= generate_obr_row_blood_test(jsonObject,curr_time_tmp)
     message_hl7+= generate_obx_row_blood_test(jsonObject,curr_time_tmp)
     # Adding the NTE segment (The NTE segment contains narrative text information)
-    message_hl7 += "NTE|1||This is a test message for the Emergency Room Forum.\r"
-    
-    
+    message_hl7 += "NTE|1||This is a test message for the Emergency Room Forum.|\r"
     return hl7.parse(message_hl7)
 
     # Set the message type
@@ -429,7 +422,7 @@ def __main__():
     }
     # Translate the JSON object to an HL7 message
     message = translate_from_json_to_hl7(jsonObject)
-    print(jsonObject)
+    
     print(message[0])
     print(message[1])
     print(message[2])
@@ -441,5 +434,3 @@ def __main__():
     print(message[8])
     print(message[9])
     print(message[10])
-
-__main__()
