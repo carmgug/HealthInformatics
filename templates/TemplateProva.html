@@ -18,27 +18,28 @@
     <div class="notification is-info">
     <!--Search Bar-->
     <div class="box" >
-        <div class="container is-widescreen">
-            <div class="notification is-primary is-light" style="box-shadow: 10px 10px lightblue">
-                <form method="GET" action="{{ url_for('getExamByFiscalCodeAndTestName') }}" class="field has-addons">
-                    <input required class="input is-primary" type="text" name="fiscalCode" placeholder="Insert Fiscal Code" />
-                    <p class="control">
-                        <span class="select is-primary">
-                            <select name="examsType" >
-                                <option value="ALL">All Type of Exams</option>
-                                <option value="UREA AND ELECTROLYTES">Urea Test Exams</option>
-                                <option value="BLOOD PRESSURE">Blood Pressure Exams</option>
-                            </select>
-                        </span>
-                    </p>
-                    <p class="control">
-                    </p>
-                    <div class="control">
-                        <button type="submit" class="button is-primary">Search</button>
-                    </div>
-                </form>
-            </div>
+    <div class="container is-widescreen">
+        <div class="notification is-primary is-light" style="box-shadow: 10px 10px lightblue">
+            <form method="GET" action="{{ url_for('getExamByFiscalCodeAndDateAndTestName') }}" class="field has-addons">
+                <input required class="input is-primary" type="text" name="fiscalCode" placeholder="Insert Fiscal Code" />
+                <p class="control">
+                    <span class="select is-primary">
+                        <select name="examsType">
+                            <option value="ALL">All Type of Exams</option>
+                            <option value="UREA AND ELECTROLYTES">Urea Test Exams</option>
+                            <option value="BLOOD PRESSURE">Blood Pressure Exams</option>
+                        </select>
+                    </span>
+                </p>
+                <p class="control">
+                    <input  class="input is-primary" type="date" name="examDate" />
+                </p>
+                <div class="control">
+                    <button type="submit" class="button is-primary">Search</button>
+                </div>
+            </form>
         </div>
+    </div>
         <br>
         {% if data is defined %}
         <div class="container is-widescreen  ">
@@ -57,8 +58,8 @@
                                             <!-- Immagine e informazioni -->
                                             <img src="/static/Cartella.jpg" alt="Cartella" style="width: 50%; height: auto; margin: 0 auto;">
                                             <p>
-                                                <strong>Data:</strong> {{ item.date[6:8] }}/{{ item.date[4:6] }}/{{ item.date[:4] }}<br>
-                                                <strong>Operatore:</strong> {{ item.idOperator }}
+                                                <strong>Date: </strong> {{ item.date[6:8] }}/{{ item.date[4:6] }}/{{ item.date[:4] }}<br>
+                                                <strong>Operator: </strong> {{ item.idOperator }}
                                             </p>
                                         </div>
                                     </div>
@@ -95,8 +96,8 @@
                                                 {% for pat in patient %}
                                                 {% if pat.fiscalCode == item.patientId %}
                                                 <strong>Name:</strong> {{pat.name}}<br>
-                                                <strong>Cognome:</strong> {{pat.familyName}}<br>
-                                                <strong>Sex:</strong> {{pat.sex}}<br>
+                                                <strong>Family Name:</strong> {{pat.familyName}}<br>
+                                                <strong>Gender:</strong> {{pat.sex}}<br>
                                                 <strong>Birth Date:</strong> {{pat.birthDate}}<br>
                                                 <strong>Country:</strong> {{pat.country}} ({{pat.countryCode}})
                                                 {% endif %}
@@ -111,7 +112,9 @@
                                         <h1 class="is-size-5 has-text-centered">Note</h1>
                                         <!-- Corpo -->
                                         <div>
-
+                                        <p>
+                                            {{ item.note }}
+                                        </p>
                                         </div>
                                     </div>
                                 </div>
@@ -132,7 +135,7 @@
     <div class="content has-text-centered">
         <p>
             <div class="container content has-text-centered">
-                <p> Carmelo Gugliotta, Marco Leto, Riccardo Barrichella, Francesca Mafalda Daniele</p>
+                <p> Carmelo Gugliotta, Marco Leto, Riccardo Barichella, Francesca Mafalda Daniele</p>
             </div>
         </p>
     </div>
@@ -144,7 +147,7 @@
         // Impedisci il comportamento predefinito del modulo
         var fiscalCode = document.querySelector('[name="fiscalCode"]').value;
         var examsType = document.querySelector('[name="examsType"]').value;
-
+        var examDate = document.querySelector('[name="examDate"]').value;
         var url = '{{ url_for("getExamByFiscalCode") }}' + '?fiscalCode=' + encodeURIComponent(fiscalCode) + '&examsType=' + encodeURIComponent(examsType);
 
         // Effettua una richiesta GET al tuo Flask API

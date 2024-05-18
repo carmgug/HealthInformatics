@@ -22,7 +22,6 @@ client.createDatabase('exam')
 
 print("Database List", client.listDatabases())
 
-#GENERATE DATA
 nomi_maschili = [
     "Luca", "Marco", "Andrea", "Giuseppe", "Mario", "Antonio", "Francesco", "Giovanni",
     "Roberto", "Stefano", "Alessandro", "Davide", "Simone", "Fabio", "Riccardo", "Paolo",
@@ -44,7 +43,6 @@ cognomi_italiani = [
     "Silvestri", "Palumbo", "Sanna", "Parisi", "Caruso", "De Santis", "Ferri"
 ]
 
-# Creazione del dizionario
 nomi = {
     "M": nomi_maschili,
     "F": nomi_femminili
@@ -85,21 +83,20 @@ nomi_vie = [
     "Trento", "Varese"
 ]
 
-urea_electrolytes_comments = [
+note = [
     "Patient's urea levels are within normal range, indicating proper kidney function.",
     "Electrolyte levels are balanced, suggesting no underlying metabolic abnormalities.",
     "Urea levels slightly elevated, may indicate dehydration. Advised increased fluid intake.",
     "Potassium levels are low, suggesting possible renal issues. Recommend further investigation.",
     "Calcium levels are within normal limits, indicating proper bone and nerve function.",
-]
-
-blood_pressure_comments = [
     "Patient's blood pressure is elevated, indicating hypertension. Advised lifestyle modifications.",
     "Blood pressure readings are consistently high. Medication adjustment may be necessary.",
     "Systolic pressure is within normal range, but diastolic pressure is elevated. Monitor closely.",
     "Blood pressure readings fluctuate, recommend daily monitoring to identify patterns.",
     "Orthostatic hypotension observed, advise caution when changing positions to prevent falls.",
 ]
+
+
 
 operators = [{'idOperator': 1, 'name': 'John', 'surname': 'Doe'},
              {'idOperator': 2, 'name': 'Jane', 'surname': 'Doe'},
@@ -166,6 +163,7 @@ def generaData(numPerson):
         city = random.choice(citta_italiane)
         phone = genera_numero_telefonico()
         cf = calcola_codice_fiscale(name, familyName, date, city, sessoRnd)
+        yersterdayDate = datetime.now() - timedelta(days=1)
         data = {
             "patient": {
                 "fiscalCode": cf,
@@ -182,15 +180,15 @@ def generaData(numPerson):
                 "phone": phone,
                 "language": "Italian"
             },
-            "note": "NOTE PAZIENTE",
+            "note": note[random.randint(0, len(note) - 1)],
 
             "operator": {
                 "idOperator": random.choice(range(1, len(operators) + 1)),
-                "timestamp": datetime.now().strftime(formato_personalizzato_data)
+                "timestamp": yersterdayDate.strftime(formato_personalizzato_data)
             },
             "orders": [
                 {
-                    "placerOrderNumber": numOrder,
+                    "fillerOrderNumber": numOrder,
                     "testName": "UREA AND ELECTROLYTES",
                     "potassiumValue": random.randint(35, 53) / 10,
                     "potassiumUnit": "MMOLL",
@@ -203,7 +201,7 @@ def generaData(numPerson):
                     "ureaReferenceRange": "2.5-7.8",
                 },
                 {
-                    "placerOrderNumber": numOrder + 1,
+                    "fillerOrderNumber": numOrder + 1,
                     "testName": "BLOOD PRESSURE",
                     "systolicBloodPressureValue": random.randint(90, 120),
                     "systolicBloodPressureUnit": "MMHG",
@@ -246,7 +244,7 @@ def hasOperator(operatorId):
 def hasPatient(patientId):
     for patient in client.listDocuments('patient'):
         doc = client.getDocument('patient', patient)
-        if (doc['_id'] == patientId):
+        if (doc['fiscalCode'] == patientId):
             print(patient)
             return True
     return False
@@ -266,18 +264,17 @@ def addPatient(dbClient, patientJsonInfo):
         'postalCode': patientJsonInfo['postalCode'],
         'country': patientJsonInfo['country'],
         'countryCode': patientJsonInfo['countryCode'],
-        'phone': patientJsonInfo['phone'],
         'language': patientJsonInfo['language']
     }
                          )
 
-
-def addExam(dbClient, fiscalCode, operatorId, examInfo, time):
+def addExam(dbClient, fiscalCode, operatorId, examInfo, time, note):
     if (examInfo['testName'] == "UREA AND ELECTROLYTES"):
         dbClient.addDocument('exam', {
             '_id': dbClient._generateUuid(),  # Usa un UUID per l'identificatore dell'esame
             'patientId': fiscalCode,  # Aggiungi l'identificatore fiscale del paziente
-            'idOperator': operatorId,  # Aggiungi l'identificatore dell'operatore che ha effettuato l'ordine
+            'idOperator': int(operatorId),  # Aggiungi l'identificatore dell'operatore che ha effettuato l'ordine
+            'fillerOrderNumber': examInfo['fillerOrderNumber'],
             'testName': examInfo['testName'],
             'potassiumValue': examInfo['potassiumValue'],
             'potassiumUnit': "MMOLL",
@@ -289,7 +286,8 @@ def addExam(dbClient, fiscalCode, operatorId, examInfo, time):
             "ureaUnit": "MMOLL",
             "ureaReferenceRange": "2.5-7.8" ,
             'date': time[:8],  # Ottieni i primi 8 caratteri per la data
-            'time': time[8:]  # Ottieni i caratteri dopo i primi 8 per l'ora
+            'time': time[8:],  # Ottieni i caratteri dopo i primi 8 per l'ora
+            'note': note
         })
 
 
@@ -297,7 +295,7 @@ def addExam(dbClient, fiscalCode, operatorId, examInfo, time):
         dbClient.addDocument('exam', {
             'id': dbClient._generateUuid(),  # Usa un UUID per l'identificatore dell'esame
             'patientId': fiscalCode,  # Aggiungi l'identificatore fiscale del paziente
-            'idOperator': operatorId,  # Aggiungi l'identificatore dell'operatore che ha effettuato l'ordine
+            'idOperator': int(operatorId),  # Aggiungi l'identificatore dell'operatore che ha effettuato l'ordine
             'testName': examInfo['testName'],
             'systolicBloodPressureValue': examInfo['systolicBloodPressureValue'],
             'systolicBloodPressureUnit': "MMHG",
@@ -306,13 +304,14 @@ def addExam(dbClient, fiscalCode, operatorId, examInfo, time):
             'diastolicBloodPressureUnit': "MMHG",
             "diastolicBloodPressureReferenceRange": "60-80",
             'date': time[:8],  # Ottieni i primi 8 caratteri per la data
-            'time': time[8:]  # Ottieni i caratteri dopo i primi 8 per l'ora
+            'time': time[8:],  # Ottieni i caratteri dopo i primi 8 per l'ora
+            'note': note
         })
 
 
 def addNewExam(visit):
     # se l'operatore non esiste non esiste l'esame
-    if (not hasOperator(visit['operator']['idOperator'])):
+    if (not hasOperator(int(visit['operator']['idOperator']))):
         print('Operator not found')
         return
     # se il paziente non esiste lo devo aggiungere 
@@ -321,7 +320,9 @@ def addNewExam(visit):
     # aggiungo l'esame
     for order in visit['orders']:
         addExam(client, visit['patient']['fiscalCode'], visit['operator']['idOperator'], order,
-                visit['operator']['timestamp'])
+                visit['operator']['timestamp'], visit['note'])
+
+    print("New exam added: ",visit)
 
 
 def getExam():
@@ -340,19 +341,6 @@ def getAllFiscalCode():
         ret.append(doc['fiscalCode'])
 
     return ret
-
-
-'''
-def getExamByFiscalCode(fiscalCode):
-    ret = []
-    for exam in client.listDocuments('exam'):
-        doc = client.getDocument('exam', exam)
-        if (doc['patientId'] == fiscalCode):
-            ret.append(doc)
-
-    return ret
-
-'''
 
 
 def getExamByFiscalCode(fiscalCode):
@@ -401,12 +389,23 @@ def getExamByTestName(testName):
 
 def getExamByFiscalCodeAndDateAndTestName(fiscalCode, date, testName):
     ret = []
+    patientData = []
     for exam in client.listDocuments('exam'):
         doc = client.getDocument('exam', exam)
         if (doc['patientId'] == fiscalCode and doc['date'] == date and doc['testName'] == testName):
             ret.append(doc)
 
-    return ret
+    print(len(ret))
+
+    for el in ret:
+        for person in client.listDocuments('patient'):
+            doc = client.getDocument('patient', person)
+            if (el['patientId'] == doc['fiscalCode'] and not (doc in patientData)):
+                patientData.append(doc)
+
+    print(len(ret))
+
+    return ret, patientData
 
 
 # ritorna tutti gli esami di un operatore
@@ -462,31 +461,6 @@ addOperators(operators)
 
 for el in data:
     addNewExam(el)
-
-print("---------GET EXAM BY FISCAL CODE---------")
-
-print(getExamByFiscalCode("MRCDNLS1991VEROF"))
-
-print("---------GET EXAM BY FISCAL CODE AND DATE---------")
-
-print(getExamByFiscalCodeAndDate("MRCDNLS1991VEROF", "20240512"))
-
-print("---------GET EXAM BY TEST NAME---------")
-
-print(getExamByTestName("UREA AND ELECTROLYTES"))
-
-print("---------GET EXAM BY FISCAL CODE AND DATE AND TEST NAME---------")
-
-print(getExamByFiscalCodeAndDateAndTestName("MRCDNLS1991VEROF", "20240512", "UREA AND ELECTROLYTES"))
-
-print("---------GET EXAM BY OPERATOR ID---------")
-
-print(getExamByOperatorId(1))
-
-print("---------GET EXAM BY FISCAL CODE AND TEST NAME---------")
-
-print(getExamByFiscalCodeAndTestName("MRCDNLS1991VEROF", "UREA AND ELECTROLYTES"))
-
 
 print("---------GET ALL FISCAL CODE---------")
 

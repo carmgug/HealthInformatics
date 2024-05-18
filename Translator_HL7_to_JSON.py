@@ -20,24 +20,24 @@ def translate_from_HL7_to_JSON(hl7_message):
     patientLanguage = hl7_message[2][15]
     
     patient = {
-        "patientID": patientID[0],
-        "patientName": patientName[0],
-        "patientSurname": patientSurname[0],
-        "patientGender": patientGender[0],
-        "patientBirthDate": patientBirthDate[0],
-        "patientAddress": patientAddress[0],
-        "patientCity": patientCity[0],
-        "patientProvince": patientProvince[0],
-        "patientPostalCode": patientPostalCode[0],
-        "patientCountryCode": patientCountryCode[0],
-        "patientPhoneNumber": patientPhoneNumber[0],
-        "patientLanguage": patientLanguage[0]
+        "fiscalCode": patientID[0],
+        "name": patientName[0],
+        "familyName": patientSurname[0],
+        "sex": patientGender[0],
+        "birthDate": patientBirthDate[0],
+        "streetAddress": patientAddress[0],
+        "city": patientCity[0],
+        "province": patientProvince[0],
+        "postalCode": patientPostalCode[0],
+        "country": patientCountryCode[0],
+        "countryCode": patientPhoneNumber[0],
+        "language": patientLanguage[0]
     }
     
     operatorID = hl7_message[1][5]
     #timestamp = datetime.strptime(str(hl7_message[1][2][0]), "%Y%m%d%H%M%S")
     operator = {
-        "operatorID": operatorID[0],
+        "idOperator": operatorID[0],
         "timestamp": str(hl7_message[1][2][0])
     }
     

@@ -53,9 +53,8 @@
                 <label for="sex">Sex</label>
                 <select id="sex" name="sex" required>
                     <option value="">Select</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                    <option value="male">M</option>
+                    <option value="female">F</option>
                 </select>
             </div>
         </div>
@@ -65,7 +64,7 @@
                 <input type="text" id="name" name="name" required>
             </div>
             <div style="width: 30%;">
-                <label for="date">Date</label>
+                <label for="date">Date of birth</label>
                 <input type="date" id="date" name="date" required>
             </div>
         </div>
@@ -114,15 +113,15 @@
         <h1 class="is-size-4 has-text-centered "><strong>UREA AND ELECTROLYTES</strong></h1>
         <div class="form-row">
             <div style="width: 33%;">
-                <label for="potassiumValue">Potassium (MMOLL)</label>
+                <label for="potassiumValue">Potassium (MMOLL) (3.5-5.3)</label>
                 <input type="text" id="potassiumValue" name="potassiumValue" required>
             </div>
             <div style="width: 33%;">
-                <label for="sodiumValue">Sodium (MMOLL)</label>
+                <label for="sodiumValue">Sodium (MMOLL) (133-146)</label>
                 <input type="text" id="sodiumValue" name="sodiumValue" required>
             </div>
             <div style="width: 33%;">
-                <label for="ureaValue">Urea (MMOLL)</label>
+                <label for="ureaValue">Urea (MMOLL) (2.5-7.8)</label>
                 <input type="text" id="ureaValue" name="ureaValue" required>
             </div>
         </div>
@@ -131,11 +130,11 @@
         <h1 class="is-size-4 has-text-centered"><strong>BLOOD PRESSURE</strong></h1>
         <div class="form-row">
             <div style="width: 50%;">
-                <label for="systolicBloodPressureValue">Systolic Blood Pressure (MMHG)</label>
+                <label for="systolicBloodPressureValue">Systolic Blood Pressure (MMHG) (90-120)</label>
                 <input type="text" id="systolicBloodPressureValue" name="systolicBloodPressureValue" required>
             </div>
             <div style="width: 50%;">
-                <label for="diastolicBloodPressureValue">Diastolic Blood Pressure (MMHG)</label>
+                <label for="diastolicBloodPressureValue">Diastolic Blood Pressure (MMHG) (60-80)</label>
                 <input type="text" id="diastolicBloodPressureValue" name="diastolicBloodPressureValue" required>
             </div>
         </div>
@@ -153,7 +152,7 @@
             </div>
         </div>
         <div class="form-row">
-            <div class="form-row submit-button">
+            <div class="form-row is-flex is-justify-content-center">
                 <button type="button"  class="button is-primary" onclick="submitForm()" >Submit</button>
             </div>
         </div>

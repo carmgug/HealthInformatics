@@ -4,6 +4,7 @@ import requests
 import Translator_HL7_to_JSON
 #import databaseImplementation
 import Translator_JSON_to_HL7
+import databaseImplementation
 
 app = Flask(__name__)
 
@@ -23,9 +24,6 @@ def cardiology_home():
     return render_template('TemplateProva.html')
 
 
-# Create a get request for the form, that have as input a string
-# and a list of strings.
-
 
 data = []
 patient = []
@@ -33,12 +31,8 @@ patient = []
 
 @app.route('/getExamByFiscalCode', methods=['GET'])
 def getExamByFiscalCode():
-    #take the fiscal code from the input
     fiscalCode = request.args.get('fiscalCode')
-    #take the list of exams from the input
     exams, patientInfo = databaseImplementation.getExamByFiscalCode(fiscalCode)
-    #return the list of exams
-
     data = exams
     patient = patientInfo
     return render_template('TemplateProva.html', data=data, patient=patient)
@@ -48,14 +42,48 @@ def getExamByFiscalCode():
 def getExamByFiscalCodeAndTestName():
     fiscalCode = request.args.get('fiscalCode')
     examsType = request.args.get('examsType')
-    if (examsType == "ALL"):
+    exams, patientInfo = databaseImplementation.getExamByFiscalCodeAndTestName(fiscalCode, examsType)
+    data = exams
+    patient = patientInfo
+    return render_template('TemplateProva.html', data=data, patient=patient)
+
+
+@app.route('/getExamByFiscalCodeAndDate', methods=['GET'])
+def getExamByFiscalCodeAndDate():
+    fiscalCode = request.args.get('fiscalCode')
+    date = request.args.get('date')
+    exams, patientInfo = databaseImplementation.getExamByFiscalCodeAndDate(fiscalCode, date)
+    data = exams
+    patient = patientInfo
+    return render_template('TemplateProva.html', data=data, patient=patient)
+
+
+@app.route('/getExamByFiscalCodeAndDateAndTestName', methods=['GET'])
+def getExamByFiscalCodeAndDateAndTestName():
+    fiscalCode = request.args.get('fiscalCode')
+    examsType = request.args.get('examsType')
+    date = request.args.get('examDate')
+    if(date!=""):
+        date = date.replace("-", "")
+
+
+    if(examsType == "ALL" and date == ""):
         exams, patientInfo = databaseImplementation.getExamByFiscalCode(fiscalCode)
         data = exams
         patient = patientInfo
         return render_template('TemplateProva.html', data=data, patient=patient)
-    #take the list of exams from the input
-    exams, patientInfo = databaseImplementation.getExamByFiscalCodeAndTestName(fiscalCode, examsType)
-    #return the list of exams
+    elif(examsType == "ALL" and date!=""):
+        exams, patientInfo = databaseImplementation.getExamByFiscalCodeAndDate(fiscalCode, date)
+        data = exams
+        patient = patientInfo
+        return render_template('TemplateProva.html', data=data, patient=patient)
+    elif(examsType != "ALL" and date==""):
+        exams, patientInfo = databaseImplementation.getExamByFiscalCodeAndTestName(fiscalCode, examsType)
+        data = exams
+        patient = patientInfo
+        return render_template('TemplateProva.html', data=data, patient=patient)
+
+    exams, patientInfo = databaseImplementation.getExamByFiscalCodeAndDateAndTestName(fiscalCode, date,examsType)
     data = exams
     patient = patientInfo
     return render_template('TemplateProva.html', data=data, patient=patient)
@@ -63,12 +91,8 @@ def getExamByFiscalCodeAndTestName():
 
 @app.route('/send_to_cardiology', methods=['POST'])
 def sendToCardiology():
-    #take the json from the input
     json = request.get_json()
-    #translate the json into a hl7 message
     hl7 = Translator_JSON_to_HL7.translate_from_json_to_hl7(json)
-    #send the hl7 message to the cardiology department
-    #Simulate the sending of the message
     # Create a json object with hl7 inside and then call post function
     # on the server
     jsonObject = {'hl7': hl7}
@@ -79,15 +103,13 @@ def sendToCardiology():
 
 @app.route('/send_hl7_message', methods=['POST'])
 def reciveFromEmergencyRoom():
-    #receive the hl7 message from the emergency room
-    #take the hl7 message from the input
+    # the hl7 message from the emergency room
     hl7 = request.get_json()
     hl7 = hl7['hl7']
     #translate the hl7 message into a json
     json = Translator_HL7_to_JSON.translate_from_HL7_to_JSON(hl7)
-    #store the json in the database
-    #databaseImplementation.addNewExam(json)
     print(json)
+    databaseImplementation.addNewExam(json)
     print("SALVATO")
     # return ok response
     # Return an "OK" status
